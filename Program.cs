@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,19 +9,17 @@ namespace Threads
     {
         static void Main(string[] args)
         {
-            var taskCompSource = new TaskCompletionSource<bool>();
-
-            var thread = new Thread(() =>
+            Enumerable.Range(0, 100).ToList().ForEach(f =>
             {
-                Thread.Sleep(1000);
-                taskCompSource.TrySetResult(true);
+                ThreadPool.QueueUserWorkItem((o) =>
+                {
+                    Console.WriteLine($"Prasideda {Thread.CurrentThread.ManagedThreadId}");
+                    Thread.Sleep(2000);
+                    Console.WriteLine($"Pagaliau {Thread.CurrentThread.ManagedThreadId}");
+                });
             });
 
-            Console.WriteLine(thread.ManagedThreadId);
-
-            thread.Start();
-
-            var test = taskCompSource.Task.Result;
+            Console.ReadLine();
         }
     }
 }
