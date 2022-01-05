@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Threads
 {
@@ -7,39 +8,19 @@ namespace Threads
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World! 1");
-            Thread.Sleep(2000);
-            Console.WriteLine("Hello World! 2");
-            Thread.Sleep(2000);
-            Console.WriteLine("Hello World! 3");
-            Thread.Sleep(2000);
-            Console.WriteLine("Hello World! 4");
+            var taskCompSource = new TaskCompletionSource<bool>();
 
-            new Thread(() =>
+            var thread = new Thread(() =>
             {
                 Thread.Sleep(1000);
-                Console.WriteLine("Thread 1");
-            }).Start();
+                taskCompSource.TrySetResult(true);
+            });
 
-            new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                Console.WriteLine("Thread 2");
-            }).Start();
+            Console.WriteLine(thread.ManagedThreadId);
 
-            new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                Console.WriteLine("Thread 3");
-            }).Start();
+            thread.Start();
 
-            new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                Console.WriteLine("Thread 4");
-            }).Start();
-
-            Console.ReadLine();
+            var test = taskCompSource.Task.Result;
         }
     }
 }
